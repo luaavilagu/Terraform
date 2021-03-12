@@ -1,3 +1,4 @@
+
 #------------------------------------------- VCNs
 
 resource "oci_core_vcn" "VCN_PRD"{ 
@@ -367,6 +368,17 @@ resource "oci_core_route_table" "RT_BD-DEV" {
     compartment_id = "ocid1.compartment.oc1..aaaaaaaan3mcv6dzha2vestcsfjn6prwet6ws3zi3lxpalbvewey6n6rehdq" 
     vcn_id = "${oci_core_vcn.VCN_NONPRD.id}"
     display_name = "RT_BD-DEV"
+
+    route_rules {
+        #Required
+        network_entity_id = "${oci_core_service_gateway.SGW_VCN-NONPRD.id}"
+
+        #Optional
+        #cidr_block = var.route_table_route_rules_cidr_block
+        description = "Intento"
+        destination = "all-iad-services-in-oracle-services-network"
+        destination_type = "SERVICE_CIDR_BLOCK"
+    }
 }
 
 #------------------------------------------- IGWs
@@ -478,4 +490,14 @@ resource "oci_core_instance" "BASTION" {
 
     }
     preserve_boot_volume = false
+}
+
+#------------------------------------------- PRUEBA Sgw
+
+data "oci_core_service_gateways" "test_service_gateways" {
+    #Required
+    compartment_id = "ocid1.compartment.oc1..aaaaaaaa7th5ozo2pr5dr3xbwcepdlehlmbn6nehzskfl35ahw66szyc2j7a"
+}
+output "sgw" {
+    value = "${data.oci_core_service_gateways.test_service_gateways.service_gateways}"
 }
